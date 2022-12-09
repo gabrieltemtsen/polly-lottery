@@ -5,7 +5,7 @@ import { ref } from 'vue';
 
 const ticketPrice = ref(null as any)
 const cryptoStore = useCryptoStore()
-const {setDraw, connectWallet, enterDraw} = useCryptoStore();
+const {connectWallet, enterDraw} = useCryptoStore();
 const {account, lotteryPool, ticketCount,nativeBalance} = storeToRefs(cryptoStore)
 
 defineProps<{

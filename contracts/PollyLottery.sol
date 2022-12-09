@@ -5,8 +5,9 @@ pragma solidity >=0.7.0 <0.9.0;
 import "hardhat/console.sol";
 
 
+
 /**
- * @title PollyLottery
+ * @title Lottery
  * @dev Simple lottery contract where users can enter and a random winner is chosen
  * after the deadline has passed.
  */
@@ -36,7 +37,7 @@ contract PollyLottery {
     event LotteryEnded();
     event LotteryWinner(address winner);
 
-      constructor() {
+     constructor() {
         owner = msg.sender;
         ticketPrice = 0.05 ether;
         deadline = block.timestamp;
@@ -47,16 +48,15 @@ contract PollyLottery {
      * @dev Allows a player to enter the lottery by sending the ticketPrice in wei
      * to the contract.
      */
-     function setDraw(uint256 _ticketPrice) public {
-         deadline = block.timestamp;
-         ticketPrice = _ticketPrice;
-         
-     }
+    
      // Getter smart contract Balance
     function getBalance() external view returns(uint) {
         return address(this).balance;
     }
-    function enter() public payable{
+    function getPlayers() external view returns(uint) {
+        return playerCount;
+    }
+    function enterDraw() public payable{
         require(
             msg.value == ticketPrice,
             "Incorrect ticket price. Please send the correct amount to enter the lottery."
@@ -73,11 +73,20 @@ contract PollyLottery {
         playerCount++;
         emit NewPlayer(msg.sender);
     }
+    function isOwner (address _addr) external view returns(bool) {
+        bool yes = true;
+        if(_addr != owner){
+            return false;
+        }
+        return yes;
+
+    }
 
     /**
      * @dev Picks a random winner from the players and ends the lottery. Can only
      * be called by the contract owner after the deadline has passed.
      */
+     
     function pickWinner() public {
         require(
             msg.sender == owner,
@@ -103,6 +112,14 @@ contract PollyLottery {
     /**
      * @dev Allows the winner to withdraw their winnings from the contract.
      */
+     function isWinner (address _addr) external view returns(bool) {
+        bool yes = true;
+        if(_addr != winner){
+            return false;
+        }
+        return yes;
+
+    }
     function withdrawWinnings() public payable{
         require(
             winnerSet == true,
@@ -122,3 +139,4 @@ contract PollyLottery {
    
 
 }
+

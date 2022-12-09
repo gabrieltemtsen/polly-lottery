@@ -5,8 +5,8 @@ import { ref } from 'vue';
 
 const ticketPrice = ref(null as any)
 const cryptoStore = useCryptoStore()
-const {setDraw, connectWallet, enterDraw} = useCryptoStore();
-const {account, lotteryPool, ticketCount} = storeToRefs(cryptoStore)
+const { connectWallet, enterDraw, pickWinner, withdraw} = useCryptoStore();
+const {account, lotteryPool, ticketCount, isOwner, isWinner,} = storeToRefs(cryptoStore)
 </script>
 
 <template>
@@ -24,7 +24,17 @@ const {account, lotteryPool, ticketCount} = storeToRefs(cryptoStore)
     <p class="card-text"> You can buy as many tickets as you want. </p>
     <p class="card-text"> Once the draw ends kindly come to check if you won the lottery. </p>
     <a href="#" class="btn btn-primary" @click="enterDraw">Buy Tickets</a>
-    <p></p> <a href="#" class="btn btn-primary">Withdraw</a>
+    <div class="py-5">
+      <p v-if="isWinner">
+      <a href="#" class="btn btn-primary" @click="withdraw">Withdraw</a>
+    </p> 
+
+    </div>
+    <div><p v-if="isOwner">
+      <a href="#" class="btn btn-primary" @click="pickWinner">Pick Winner</a>
+    </p> 
+  </div>
+    
   </div>
   <div class="card-footer text-muted">
     Draw to end in: 5 Hours

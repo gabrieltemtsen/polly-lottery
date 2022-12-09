@@ -8,7 +8,7 @@ import contractABI from '../artifacts/contracts/PollyLottery.sol/PollyLottery.js
 
 
 
-const contractAddress = '0x762571cfF94F44E83CaefBca68fd07D5638242E3'
+const contractAddress = '0x0106661E592639EC7cbb6A3Fd7b27964695D1365'
 const {ethereum} = window
 
 export const useCryptoStore = defineStore('user', () => {
@@ -19,6 +19,9 @@ export const useCryptoStore = defineStore('user', () => {
     const address = account.value;
     const nativeBalance = ref()
     const transactions = ref()
+    const isOwner = ref();
+    const isWinner = ref()
+
 
 
     
@@ -76,7 +79,11 @@ export const useCryptoStore = defineStore('user', () => {
                 const count =(await pollyLotteryContract.getBalance()) ;
                 const amount = ethers.utils.formatEther(count);
                 lotteryPool.value = amount;
-                console.log('XX count', amount);
+                const check1 =(await pollyLotteryContract.isOwner(account.value)) ;
+                isOwner.value = check1;
+                const check2 =(await pollyLotteryContract.isWinner(account.value)) ;
+                isWinner.value = check2;
+
                 setLoader(false);
 
             }
@@ -108,27 +115,38 @@ export const useCryptoStore = defineStore('user', () => {
             console.log('error', e)
         }
     }
-
-    async function setDraw(ticketPrice: number) {
-        console.log('settingLOadr')
+    async function withdraw() {
         setLoader(true)
+        try{
+            
+            if (ethereum) {
+                const provider = new ethers.providers.Web3Provider(ethereum)
+                const signer = provider.getSigner();
+                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI.abi, signer);
+
+                const withdraw =(await pollyLotteryContract.withdrawWinnings()) ;
+                await withdraw.wait();
+                setLoader(false);
+
+            }
+        }
+        catch(e) {
+            setLoader(false)
+            console.log('error', e)
+        }
+    }
+
+    async function pickWinner() {
         try {
-            console.log('got', ticketPrice)
             if (ethereum) {
                 const provider = new ethers.providers.Web3Provider(ethereum)
                 const signer = provider.getSigner();
                 const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI.abi, signer);
 
                
-                const lotteryTxn = await pollyLotteryContract.setDraw(ticketPrice)
+                const lotteryTxn = await pollyLotteryContract.pickWinner()
                 console.log('processingg...', lotteryTxn.hash)
                 await lotteryTxn.wait()
-                console.log('sent--', lotteryTxn.hash)
-
-                const count =(await pollyLotteryContract.ticketPrice()) ;
-                const amount = ethers.utils.formatEther(count)
-                console.log('XX count', amount);
-                setLoader(false);
 
             } else {
                 console.log("ETH doesnt Exist!")
@@ -162,7 +180,7 @@ export const useCryptoStore = defineStore('user', () => {
                       timeout: 18500,
                     }
                   );
-                const lotteryTxn = await pollyLotteryContract.enter(tx)
+                const lotteryTxn = await pollyLotteryContract.enterDraw(tx)
                 console.log('processingg...', lotteryTxn.hash)
                 await lotteryTxn.wait()
                 createToast(
@@ -206,6 +224,7 @@ export const useCryptoStore = defineStore('user', () => {
               );
             console.log('Connected: ', myAccounts[0])
             account.value = myAccounts[0]
+
             const options = {
                 method: 'GET',
                 url: `https://deep-index.moralis.io/api/v2/${account.value}/balance`,
@@ -238,12 +257,15 @@ export const useCryptoStore = defineStore('user', () => {
         setLoader,
         loading,
         connectWallet,
-        setDraw,
         enterDraw,
+        pickWinner,
+        withdraw,
         account,
         lotteryPool,
         ticketCount,
         nativeBalance,
-        transactions
+        transactions,
+        isOwner,
+        isWinner
     }
 }) 

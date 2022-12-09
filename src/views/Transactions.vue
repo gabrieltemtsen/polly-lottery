@@ -8,7 +8,7 @@ import { ethers } from 'ethers';
 
 const ticketPrice = ref(null as any)
 const cryptoStore = useCryptoStore()
-const {setDraw, connectWallet, enterDraw} = useCryptoStore();
+const {connectWallet, enterDraw} = useCryptoStore();
 const {account, lotteryPool, ticketCount,nativeBalance, transactions} = storeToRefs(cryptoStore)
 
 const dateTime = (value: any) =>{
