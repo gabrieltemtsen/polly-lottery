@@ -4,7 +4,7 @@ import { ref, computed } from 'vue'
 import { createToast } from "mosha-vue-toastify";
 import 'mosha-vue-toastify/dist/style.css';
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import contractABI from '../artifacts/contracts/PollyLottery.sol/PollyLottery.json'
+import contractABI from '../abi.json'
 
 
 
@@ -74,7 +74,7 @@ export const useCryptoStore = defineStore('user', () => {
             if (ethereum) {
                 const provider = new ethers.providers.Web3Provider(ethereum)
                 const signer = provider.getSigner();
-                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI.abi, signer);
+                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI, signer);
 
                 const count =(await pollyLotteryContract.getBalance()) ;
                 const amount = ethers.utils.formatEther(count);
@@ -101,7 +101,7 @@ export const useCryptoStore = defineStore('user', () => {
             if (ethereum) {
                 const provider = new ethers.providers.Web3Provider(ethereum)
                 const signer = provider.getSigner();
-                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI.abi, signer);
+                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI, signer);
 
                 const count =(await pollyLotteryContract.playerCount()) ;
                 ticketCount.value = count;
@@ -122,7 +122,7 @@ export const useCryptoStore = defineStore('user', () => {
             if (ethereum) {
                 const provider = new ethers.providers.Web3Provider(ethereum)
                 const signer = provider.getSigner();
-                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI.abi, signer);
+                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI, signer);
 
                 const withdraw =(await pollyLotteryContract.withdrawWinnings()) ;
                 await withdraw.wait();
@@ -141,7 +141,7 @@ export const useCryptoStore = defineStore('user', () => {
             if (ethereum) {
                 const provider = new ethers.providers.Web3Provider(ethereum)
                 const signer = provider.getSigner();
-                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI.abi, signer);
+                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI, signer);
 
                
                 const lotteryTxn = await pollyLotteryContract.pickWinner()
@@ -165,7 +165,7 @@ export const useCryptoStore = defineStore('user', () => {
             if (ethereum) {
                 const provider = new ethers.providers.Web3Provider(ethereum)
                 const signer = provider.getSigner();
-                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI.abi, signer);
+                const pollyLotteryContract = new ethers.Contract(contractAddress, contractABI, signer);
                 const tx = {
                     value: ethers.utils.parseEther('0.05'),
                     gasLimit: 200000,
